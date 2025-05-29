@@ -1,0 +1,27 @@
+{
+  "name": "my-precast-app",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "start": "turbo run start",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "audit": "npm audit fix --force",
+    "test": "turbo run test",
+    "test:integration": "playwright test apps/web/tests/integration"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.52.0",
+    "eslint": "^8.55.0",
+    "prettier": "^3.1.1",
+    "turbo": "^1.11.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
