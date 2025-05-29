@@ -1,0 +1,203 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Existing models
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          UserRole  @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  projects            Project[]
+  estimates           Estimate[]
+  drawings            Drawing[]
+  reports             Report[]
+  contacts            Contact[]
+  dispatchOrders      DispatchOrder[]
+  fieldOperations     FieldOperation[]
+  productionSchedules ProductionSchedule[]
+  materials           Material[]
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  USER
+  CLIENT
+  ENGINEER
+  PRODUCTION
+  QUALITY
+  DISPATCH
+  FIELD
+  SALES
+  HR
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  status      String
+  startDate   DateTime?
+  endDate     DateTime?
+  clientId    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+  estimates   Estimate[]
+  drawings    Drawing[]
+  materials   Material[]
+  fieldOperations FieldOperation[]
+  dispatchOrders  DispatchOrder[]
+  productionSchedules ProductionSchedule[]
+}
+
+model Estimate {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  status      String
+  totalCost   Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  project     Project  @relation(fields: [projectId], references: [id])
+  projectId   String
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+}
+
+model Drawing {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  fileUrl     String
+  version     String
+  status      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  project     Project  @relation(fields: [projectId], references: [id])
+  projectId   String
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+}
+
+model Report {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  fileUrl     String?
+  type        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+}
+
+model Contact {
+  id          String   @id @default(cuid())
+  name        String
+  email       String?
+  phone       String?
+  company     String?
+  type        String
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+}
+
+model DispatchOrder {
+  id          String   @id @default(cuid())
+  orderNumber String   @unique
+  status      String
+  scheduledDate DateTime?
+  deliveryAddress String?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  project     Project  @relation(fields: [projectId], references: [id])
+  projectId   String
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+}
+
+model FieldOperation {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  status      String
+  startDate   DateTime?
+  endDate     DateTime?
+  location    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  project     Project  @relation(fields: [projectId], references: [id])
+  projectId   String
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+}
+
+model ProductionSchedule {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  startDate   DateTime?
+  endDate     DateTime?
+  status      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  project     Project  @relation(fields: [projectId], references: [id])
+  projectId   String
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+}
+
+model Material {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  quantity    Float?
+  unit        String?
+  cost        Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  project     Project  @relation(fields: [projectId], references: [id])
+  projectId   String
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+}
